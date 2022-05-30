@@ -1,3 +1,5 @@
+import http
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -41,6 +43,11 @@ class DailyWeather(db.Model):
 
     def __repr__(self):
         return f'<DailyWeather {self.city_id} {self.date}>'
+
+
+@app.route('/health')
+def health():
+    return http.HTTPStatus.OK, 'OK'
 
 
 if __name__ == '__main__':
