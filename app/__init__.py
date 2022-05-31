@@ -17,6 +17,9 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
 
+    from app.main import bp as main_bp
+    app.register_blueprint(main_bp)
+
     if not app.debug and not app.testing:
         if app.config['LOG_TO_STDOUT']:
             stream_handler = logging.StreamHandler()
