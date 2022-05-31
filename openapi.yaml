@@ -1,0 +1,238 @@
+openapi: 3.0.0
+info:
+  description: |
+    This is a simple weather API for getting current
+    and forecast data. Also serves images based on weather info.
+  version: "1.0.0"
+  title: Weather App
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/weatherapp/weather/1.0.0
+tags:
+  - name: service
+    description: Service info about the API
+  - name: weather
+    description: Weather APIs
+paths:
+  /health:
+    get:
+      tags:
+        - service
+      summary: Check API endpoint health
+      responses:
+        '200':
+          description: OK
+  /current:
+    get:
+      tags: 
+        - weather
+      summary: Get current weather
+      parameters: 
+        - in: query
+          name: city
+          description: city name
+          schema:
+            type: string
+        - in: query
+          name: lat
+          description: latitude
+          schema:
+            type: number
+        - in: query
+          name: lon
+          description: longitude
+          schema:
+            type: number
+        - in: query
+          name: lang
+          description: language
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: current weather at given latitude and longitude or city
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/City'
+                  - $ref: '#/components/schemas/Current'
+  /forecast:
+    get:
+      tags: 
+        - weather
+      summary: Get forecast data for next 4 days
+      parameters: 
+        - in: query
+          name: city
+          description: city name
+          schema:
+            type: string
+        - in: query
+          name: lat
+          description: latitude
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: lon
+          description: longitude
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: lang
+          description: language
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: forecast data for weather at given latitude and longitude or city
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/City'
+                  - $ref: '#/components/schemas/Forecast'
+  /combined:
+    get:
+      tags: 
+        - weather
+      summary: Get current weather data and forecast for next 4 days
+      parameters: 
+        - in: query
+          name: lat
+          description: latitude
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: lon
+          description: longitude
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: lang
+          description: language
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: current and forecast data
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/City'
+                  - $ref: '#/components/schemas/Current'
+                  - $ref: '#/components/schemas/Forecast'
+components:
+  schemas:
+    Current:
+      type: object
+      required:
+        - temp
+        - other
+        - status
+      properties:
+        temp:
+          $ref: '#/components/schemas/TempInfo'
+        other:
+          $ref: '#/components/schemas/OtherInfo'
+        status:
+          $ref: '#/components/schemas/WeatherStatus'
+    Forecast:
+      type: object
+      required: 
+        - future
+      properties:
+        future:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Day'
+    Day:
+      type: object
+      required: 
+        - day
+        - night
+        - other
+        - status
+        - sunrise
+        - sunset
+      properties:
+        day:
+          $ref: '#/components/schemas/TempInfo'
+        night:
+          $ref: '#/components/schemas/TempInfo'
+        other:
+          $ref: '#/components/schemas/OtherInfo'
+        status:
+          $ref: '#/components/schemas/WeatherStatus'
+        sunrise:
+          type: integer
+          format: timestamp
+          example: 1646326800
+        sunset:
+          type: integer
+          format: timestamp
+          example: 1646326800
+    WeatherStatus:
+      required:
+        - description
+        - icon
+        - image
+      properties:
+        description:
+          type: string
+          example: cloudy
+        icon:
+          type: string
+          format: url
+          example: 'http://example.com/'
+        image:
+          type: string
+          format: url
+          example: 'http://example.com/'
+      type: object
+    TempInfo:
+      required: 
+        - temp
+        - feels_like
+      properties:
+        temp:
+          type: number
+          example: 123.4
+        feels_like:
+          type: number
+          example: 123.4
+    OtherInfo:
+      required:
+        - humidity
+        - clouds
+        - wind_speed
+      properties:
+        humidity:
+          type: integer
+          minimum: 1
+          maximum: 100
+          example: 24
+        clouds:
+          type: integer
+          minimum: 1
+          maximum: 100
+          example: 40
+        wind_speed:
+          type: number
+          example: 111.2
+    City:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: 'London'
