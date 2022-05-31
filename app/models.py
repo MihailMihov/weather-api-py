@@ -1,11 +1,4 @@
-import http
-
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+from app import db
 
 
 class City(db.Model):
@@ -31,24 +24,15 @@ class DailyWeather(db.Model):
     date = db.Column(db.Date, primary_key=True, nullable=False)
     weather_status_id = db.Column(db.Integer, db.ForeignKey('weather_status.id'), nullable=False)
 
-    # day_temp =
-    # day_feels_temp =
-    # night_temp =
-    # night_feels_temp =
-    # wind_speed =
-    # humidity =
-    # clouds =
-    # sunset =
-    # sunrise =
+    day_temp = db.Column(db.Float)
+    day_temp_feels = db.Column(db.Float)
+    night_temp = db.Column(db.Float)
+    night_temp_feels = db.Column(db.Float)
+    clouds = db.Column(db.Integer)
+    humidity = db.Column(db.Integer)
+    wind_speed = db.Column(db.Float)
+    sunset = db.Column(db.DateTime)
+    sunrise = db.Column(db.DateTime)
 
     def __repr__(self):
         return f'<DailyWeather {self.city_id} {self.date}>'
-
-
-@app.route('/health')
-def health():
-    return http.HTTPStatus.OK, 'OK'
-
-
-if __name__ == '__main__':
-    app.run()
