@@ -2,6 +2,7 @@ import requests
 from flask import current_app, request
 
 from app.api import api
+from app.api.helpers import geocode
 
 
 def get_current_weather(lat, lon):
@@ -14,6 +15,33 @@ def get_current_weather(lat, lon):
 
 @api.route('/current')
 def current():
-    if 'lat' not in request.args or 'lon' not in request.args:
-        return "Record not found", 400
-    return get_current_weather(request.args.get('lat'), request.args.get('lon'))
+    lat = request.args.get('lat')
+    lon = request.args.get('lon')
+    city = request.args.get('city')
+    if lat is None or lon is None:
+        if city is None:
+            return "Missing required parameters", 400
+        else:
+            (lat_, lon_) = geocode(city)
+            lat = lat_
+            lon = lon_
+    response = get_current_weather(lat, lon)
+    data = {
+        'temp': {
+            'temp': response['main']['temp'],
+            'feels_like': response['main']['feels_like']
+        },
+        'other': {
+            'humidity': response['main']['humidity'],
+            'clouds': response['clouds']['all'],
+            'wind_speed': response['wind']['speed'],
+        },
+        'status': {
+            'description': response['weather'][0]['description'],
+            # TODO: Return full link for icon field
+            'item': response['weather'][0]['icon'],
+            # TODO: Implement background images for each status type
+            'image': 'unimplemented'
+        }
+    }
+    return data

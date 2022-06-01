@@ -1,4 +1,6 @@
 from app.models import db
+from app.models.WeatherStatus import WeatherStatus
+
 
 class DailyWeather(db.Model):
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), primary_key=True, nullable=False)
@@ -27,7 +29,7 @@ class DailyWeather(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def json(self):
+    def to_day(self):
         weather_status = WeatherStatus.query(self.weather_status_id).get()
         data = {
             'day': {

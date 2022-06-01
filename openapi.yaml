@@ -161,6 +161,7 @@ components:
         - day
         - night
         - other
+        - precipitation
         - status
         - sunrise
         - sunset
@@ -171,6 +172,8 @@ components:
           $ref: '#/components/schemas/TempInfo'
         other:
           $ref: '#/components/schemas/OtherInfo'
+        precipitation:
+          $ref: '#/components/schemas/PrecipitationInfo'
         status:
           $ref: '#/components/schemas/WeatherStatus'
         sunrise:
@@ -215,7 +218,6 @@ components:
         - humidity
         - clouds
         - wind_speed
-        - precipitation
       properties:
         humidity:
           type: integer
@@ -230,6 +232,10 @@ components:
         wind_speed:
           type: number
           example: 111.2
+    PrecipitationInfo:
+      required:
+        - precipitation
+      properties:
         precipitation:
           type: number
           example: 0.34
