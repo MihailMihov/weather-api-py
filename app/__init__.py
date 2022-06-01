@@ -4,10 +4,12 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_restx import Api
 from config import Config
 
 db = SQLAlchemy()
 migrate = Migrate()
+api = Api()
 
 
 def create_app(config_class=Config):
@@ -16,9 +18,10 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
+    api.init_app(app)
 
-    from app.main import main as main_bp
-    app.register_blueprint(main_bp)
+    from app.models import models as models_bp
+    app.register_blueprint(models_bp)
 
     from app.api import api as api_bp
     app.register_blueprint(api_bp)
@@ -43,6 +46,3 @@ def create_app(config_class=Config):
         app.logger.info('Weather startup')
 
     return app
-
-
-from app import models
