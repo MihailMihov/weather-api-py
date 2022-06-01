@@ -63,7 +63,7 @@ paths:
     get:
       tags: 
         - weather
-      summary: Get forecast data for next 4 days
+      summary: Get forecast data for 5 days
       parameters: 
         - in: query
           name: city
@@ -101,7 +101,7 @@ paths:
     get:
       tags: 
         - weather
-      summary: Get current weather data and forecast for next 4 days
+      summary: Get current weather data and forecast for 5 days
       parameters: 
         - in: query
           name: lat
@@ -215,6 +215,7 @@ components:
         - humidity
         - clouds
         - wind_speed
+        - precipitation
       properties:
         humidity:
           type: integer
@@ -229,6 +230,9 @@ components:
         wind_speed:
           type: number
           example: 111.2
+        precipitation:
+          type: number
+          example: 0.34
     City:
       required:
         - name
