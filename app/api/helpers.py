@@ -10,7 +10,6 @@ def geocode(city):
           f"&q={city}" \
           f"&limit=1"
     response = requests.get(url).json()
-    print(response)
     return response[0]['name'], response[0]['lat'], response[0]['lon']
 
 
@@ -21,7 +20,6 @@ def reverse_geocode(lat, lon):
           f"&lon={lon}" \
           f"&limit=1"
     response = requests.get(url).json()
-    print(response)
     return response[0]['name'], response[0]['lat'], response[0]['lon']
 
 
