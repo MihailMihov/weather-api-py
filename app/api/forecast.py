@@ -40,7 +40,6 @@ def get_forecast(city):
             precipitation=day.get('rain', 0),
             wind_speed=day['wind_speed'],
         )
-        print(day_db.to_day())
         day_db.save_to_db()
 
 
