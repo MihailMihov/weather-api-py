@@ -6,7 +6,6 @@ class DailyWeather(db.Model):
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), primary_key=True, nullable=False)
     date = db.Column(db.Date, primary_key=True, nullable=False)
     weather_status_id = db.Column(db.Integer, db.ForeignKey('weather_status.id'), nullable=False)
-    # weather_status = db.relationship('WeatherStatus', )
     day_temp = db.Column(db.Float)
     day_temp_feels = db.Column(db.Float)
     night_temp = db.Column(db.Float)
@@ -15,8 +14,6 @@ class DailyWeather(db.Model):
     humidity = db.Column(db.Integer)
     precipitation = db.Column(db.Float)
     wind_speed = db.Column(db.Float)
-    sunset = db.Column(db.DateTime)
-    sunrise = db.Column(db.DateTime)
 
     def __repr__(self):
         return f'<DailyWeather {self.city_id} {self.date}>'
@@ -30,7 +27,7 @@ class DailyWeather(db.Model):
         db.session.commit()
 
     def to_day(self):
-        weather_status = WeatherStatus.query(self.weather_status_id).get()
+        weather_status = db.session.query(WeatherStatus).filter_by(id=self.weather_status_id).first()
         data = {
             'day': {
                 'temp': self.day_temp,
@@ -50,8 +47,6 @@ class DailyWeather(db.Model):
                 'description': weather_status.description,
                 'icon': weather_status.icon,
                 'background': weather_status.background
-            },
-            'sunrise': self.sunrise,
-            'sunset': self.sunset
+            }
         }
         return data

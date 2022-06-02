@@ -163,8 +163,6 @@ components:
         - other
         - precipitation
         - status
-        - sunrise
-        - sunset
       properties:
         day:
           $ref: '#/components/schemas/TempInfo'
@@ -176,14 +174,6 @@ components:
           $ref: '#/components/schemas/PrecipitationInfo'
         status:
           $ref: '#/components/schemas/WeatherStatus'
-        sunrise:
-          type: integer
-          format: timestamp
-          example: 1646326800
-        sunset:
-          type: integer
-          format: timestamp
-          example: 1646326800
     WeatherStatus:
       required:
         - description

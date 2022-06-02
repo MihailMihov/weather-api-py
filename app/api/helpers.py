@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import requests
 from flask import current_app
 
@@ -19,3 +21,8 @@ def reverse_geocode(lat, lon):
           f"&limit=1"
     response = requests.get(url).json()
     return response[0]['name'], response[0]['lat'], response[0]['lon']
+
+
+def daterange(start_date, end_date):
+    for n in range(int((end_date - start_date).days)):
+        yield start_date + timedelta(n)
