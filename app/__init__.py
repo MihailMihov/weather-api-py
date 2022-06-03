@@ -2,12 +2,14 @@ import logging
 from logging.handlers import RotatingFileHandler
 import os
 from flask import Flask
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from config import Config
 
 db = SQLAlchemy()
 migrate = Migrate()
+cors = CORS()
 
 
 def create_app(config_class=Config):
@@ -16,6 +18,7 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
+    cors.init_app(app)
 
     from app.models import models as models_bp
     app.register_blueprint(models_bp)

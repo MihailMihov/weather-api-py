@@ -1,4 +1,5 @@
 from flask import request
+from flask_cors import cross_origin
 
 from app.api import api
 from app.api.helpers import get_parameters, get_city
@@ -6,6 +7,7 @@ from app.api.owm import source_current_weather
 
 
 @api.route('/current')
+@cross_origin()
 def current():
     (city_name, lat, lon) = get_parameters(request.args)
     if city_name is None:
