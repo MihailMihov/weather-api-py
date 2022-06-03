@@ -1,47 +1,34 @@
-import requests
-from flask import current_app, request
+from flask import request
 
+from app import db
 from app.api import api
-from app.api.helpers import geocode
-
-
-def get_current_weather(lat, lon):
-    url = f"https://api.openweathermap.org/data/2.5/weather" \
-          f"?appid={current_app.config['OPENWEATHERMAP_API_KEY']}" \
-          f"&lat={lat}" \
-          f"&lon={lon}"
-    return requests.get(url).json()
+from app.api.owm import geocode, source_current_weather, reverse_geocode
+from app.models.City import City
 
 
 @api.route('/current')
 def current():
     lat = request.args.get('lat')
     lon = request.args.get('lon')
-    city = request.args.get('city')
-    if lat is None or lon is None:
-        if city is None:
-            return "Missing required parameters", 400
-        else:
-            (lat_, lon_) = geocode(city)
-            lat = lat_
-            lon = lon_
-    response = get_current_weather(lat, lon)
+    city_name = request.args.get('city')
+    if lat is not None and lon is not None and city_name is not None:
+        return "Too many parameters", 400
+    if city_name is not None:
+        (city_name, lat, lon) = geocode(city_name)
+    elif lat is not None and lon is not None:
+        (city_name, lat, lon) = reverse_geocode(lat, lon)
+    else:
+        return "Missing required parameters", 400
+
+    city = db.session.query(City).filter_by(name=city_name).first()
+    if city is None:
+        city = City(name=city_name, lat=lat, lon=lon)
+        city.save_to_db()
+
     data = {
-        'temp': {
-            'temp': response['main']['temp'],
-            'feels_like': response['main']['feels_like']
+        'city': {
+            'name': city.name
         },
-        'other': {
-            'humidity': response['main']['humidity'],
-            'clouds': response['clouds']['all'],
-            'wind_speed': response['wind']['speed'],
-        },
-        'status': {
-            'description': response['weather'][0]['description'],
-            # TODO: Return full link for icon field
-            'item': response['weather'][0]['icon'],
-            # TODO: Implement background images for each status type
-            'image': 'unimplemented'
-        }
+        'current': source_current_weather(lat, lon)
     }
     return data
