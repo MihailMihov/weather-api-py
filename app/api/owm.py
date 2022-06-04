@@ -82,7 +82,7 @@ def source_forecast(city):
             night_temp_feels=day['feels_like']['night'],
             clouds=day['clouds'],
             humidity=day['humidity'],
-            precipitation=day.get('rain', 0),
+            precipitation=day.get('pop', 0),
             wind_speed=day['wind_speed'],
         )
         day_db.save_to_db()

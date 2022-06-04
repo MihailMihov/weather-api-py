@@ -40,7 +40,7 @@ class DailyWeather(db.Model):
             'other': {
                 'humidity': self.humidity,
                 'clouds': self.clouds,
-                'precipitation': self.precipitation,
+                'rain': self.precipitation,
                 'wind_speed': self.wind_speed
             },
             'status': {
