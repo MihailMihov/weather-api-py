@@ -1,6 +1,8 @@
 from app.api import api
-
+from app.api.forecast import forecast
 
 @api.route('/weather')
 def weather():
-    return {}
+    data = {}
+    current = current()
+    forecast = forecast()

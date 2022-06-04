@@ -5,42 +5,10 @@ from flask import request, current_app
 
 from app import db
 from app.api import api
-from app.api.helpers import geocode, reverse_geocode, daterange
+from app.api.helpers import geocode, reverse_geocode, daterange, source_forecast
 from app.models.City import City
 from app.models.DailyWeather import DailyWeather
 from app.models.WeatherStatus import WeatherStatus
-
-
-def get_forecast(city):
-    url = f"https://api.openweathermap.org/data/3.0/onecall" \
-          f"?appid={current_app.config['OPENWEATHERMAP_API_KEY']}" \
-          f"&exclude=current,hourly,minutely,alerts" \
-          f"&lat={city.lat}" \
-          f"&lon={city.lon}"
-    response = requests.get(url).json()
-    days = response['daily']
-    for day in days:
-        weather_status_id = day['weather'][0]['id']
-        weather_status = db.session.query(WeatherStatus).filter_by(id=weather_status_id).first()
-        if weather_status is None:
-            weather_status = WeatherStatus(id=day['weather'][0]['id'],
-                                           description=day['weather'][0]['description'],
-                                           icon=day['weather'][0]['icon'])
-            weather_status.save_to_db()
-        day_db = DailyWeather(
-            city_id=city.id,
-            date=datetime.utcfromtimestamp(day['dt']),
-            weather_status_id=weather_status_id,
-            day_temp=day['temp']['day'],
-            day_temp_feels=day['feels_like']['day'],
-            night_temp=day['temp']['night'],
-            night_temp_feels=day['feels_like']['night'],
-            clouds=day['clouds'],
-            humidity=day['humidity'],
-            precipitation=day.get('rain', 0),
-            wind_speed=day['wind_speed'],
-        )
-        day_db.save_to_db()
 
 
 @api.route('/forecast')
@@ -74,7 +42,7 @@ def forecast():
     for single_date in daterange(start_date, end_date):
         daily = db.session.query(DailyWeather).filter_by(city_id=city.id, date=single_date).first()
         if daily is None:
-            get_forecast(city)
+            source_forecast(city)
             daily = db.session.query(DailyWeather).filter_by(city_id=city.id, date=single_date).first()
         data['forecast'].append(daily.to_day())
 

@@ -1,16 +1,7 @@
-import requests
-from flask import current_app, request
+from flask import request
 
 from app.api import api
-from app.api.helpers import geocode
-
-
-def get_current_weather(lat, lon):
-    url = f"https://api.openweathermap.org/data/2.5/weather" \
-          f"?appid={current_app.config['OPENWEATHERMAP_API_KEY']}" \
-          f"&lat={lat}" \
-          f"&lon={lon}"
-    return requests.get(url).json()
+from app.api.helpers import geocode, source_current_weather
 
 
 @api.route('/current')
@@ -25,7 +16,7 @@ def current():
             (lat_, lon_) = geocode(city)
             lat = lat_
             lon = lon_
-    response = get_current_weather(lat, lon)
+    response = source_current_weather(lat, lon)
     data = {
         'temp': {
             'temp': response['main']['temp'],
@@ -39,7 +30,7 @@ def current():
         'status': {
             'description': response['weather'][0]['description'],
             # TODO: Return full link for icon field
-            'item': response['weather'][0]['icon'],
+            'icon': response['weather'][0]['icon'],
             # TODO: Implement background images for each status type
             'image': 'unimplemented'
         }
