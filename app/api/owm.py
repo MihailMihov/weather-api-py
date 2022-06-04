@@ -47,7 +47,7 @@ def source_current_weather(lat, lon):
         'status': {
             'description': response['weather'][0]['description'],
             # TODO: Return full link for icon field
-            'item': response['weather'][0]['icon'],
+            'icon': response['weather'][0]['icon'],
             # TODO: Implement background images for each status type
             'image': 'unimplemented'
         }
